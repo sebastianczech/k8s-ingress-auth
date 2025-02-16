@@ -10,6 +10,14 @@ TODO
 ```bash
 TODO
 ```
+
+```
+vi /etc/hosts
+```
+
+```
+127.0.0.1       localhost podtato.example.com podinfo.example.com foobar.example.com
+```
 3. Add [Kubernetes dashboard](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/):
 ```bash
 TODO
