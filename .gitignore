@@ -1,3 +1,12 @@
 tls.*
 oauth_id.txt
 oauth_secret.txt
+basic_auth.htpasswd
+ca.crt
+ca.key
+server.crt
+server.key
+server.csr
+client.crt
+client.key
+client.csr

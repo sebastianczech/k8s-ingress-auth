@@ -1,9 +1,10 @@
-- [x] resolve problem with rewriting e.g. podinfo works perfectly with `/`, but when deployed under `/podinfo`, there are problems with e.g. accessing `/podinfo/api/info` 
-- [x] add OAuth proxy to one of the apps (or all of them)
-  - [ ] foobar
-  - [x] podinfo
-  - [ ] podtato
-  - [ ] Kubernetes dashboard
+- [x] resolve problem with rewriting e.g. podinfo works perfectly with `/`, but when deployed under `/podinfo`, there are problems with e.g. accessing `/podinfo/api/info`
+- [x] add auth to apps:
+  - [x] Kubernetes dashboard -> service account
+  - [x] podinfo -> OAuth proxy
+  - [x] podtato -> basic auth
+  - [x] foobar -> cert auth
+- [x] prepare detailed README
 - [ ] use Kustomize
 - [ ] play with TLS & HTTPS
-- [ ] prepare detailed README
+- [ ] put all app in dedicated namespaces
