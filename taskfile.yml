@@ -1,0 +1,105 @@
+version: '3'
+
+tasks:
+  docker-clean:
+    cmds:
+      - docker image prune --all --force
+      - docker system prune --all --force
+
+  docker-debug:
+    cmds:
+      - docker exec -it home-lab-control-plane bash
+
+  cluster-create:
+    cmds:
+      - kind create cluster --config single-node-extra-port-mapping.yaml --name home-lab
+    dir: code
+
+  cluster-status:
+    cmds:
+      - kind get clusters
+      - kubectl get nodes -o wide
+    dir: code
+
+  cluster-delete:
+    cmds:
+      - kind delete cluster --name home-lab
+    dir: code
+
+  cluster-ingress-setup:
+    cmds:
+      - kubectl apply -f ingress-nginx.yaml
+      - openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=nginxsvc/O=nginxsvc"
+      - kubectl -n ingress-nginx create secret tls tls-secret --key tls.key --cert tls.crt
+    dir: code
+
+  cluster-ingress-status:
+    cmds:
+      - "kubectl wait --namespace ingress-nginx \
+        --for=condition=ready pod \
+        --selector=app.kubernetes.io/component=controller \
+        --timeout=90s"
+      - kubectl -n ingress-nginx get services
+
+  dashboard-ingress-setup:
+    cmds:
+      - helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
+      - helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard --create-namespace --namespace kubernetes-dashboard
+      - kubectl apply -f admin-user.yaml
+      - kubectl -n kubernetes-dashboard create token admin-user
+      - "kubectl wait --namespace kubernetes-dashboard \
+        --for=condition=ready pod \
+        --selector=app=kubernetes-dashboard-kong \
+        --timeout=90s"
+      - kubectl -n kubernetes-dashboard port-forward svc/kubernetes-dashboard-kong-proxy 8443:443
+    dir: code
+
+  oauth-proxy-setup:
+    cmds:
+      - "kubectl create secret generic oauth2-proxy-id \
+        --from-file=OAUTH2_PROXY_CLIENT_ID=./oauth_id.txt \
+        -n kube-system || true"    
+      - "kubectl create secret generic oauth2-proxy-secret \
+        --from-file=OAUTH2_PROXY_CLIENT_SECRET=./oauth_secret.txt \
+        -n kube-system || true"
+      - openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=podinfo.example.com/O=podinfo"
+      - kubectl -n kube-system create secret tls tls-secret --key tls.key --cert tls.crt || true
+      - kubectl apply -f oauth-proxy.yaml
+    dir: code
+
+  oauth-proxy-check:
+    cmds:
+      - kubectl -n kube-system get secret oauth2-proxy-id -o jsonpath='{.data.OAUTH2_PROXY_CLIENT_ID}' | base64 --decode
+      - kubectl -n kube-system get secret oauth2-proxy-secret -o jsonpath='{.data.OAUTH2_PROXY_CLIENT_SECRET}' | base64 --decode
+
+  app-foo-bar-setup:
+    cmds:
+      - kubectl apply -f app-foo-bar.yaml
+    dir: code
+
+  app-foo-bar-check:
+    cmds:
+      - "curl -H 'Host: foobar.example.com' localhost/foo"
+      - "curl -H 'Host: foobar.example.com' localhost/bar"
+
+  app-podtato-setup:
+    cmds:
+      - kubectl apply -f app-podtato.yaml
+    dir: code
+
+  app-podtato-check:
+    cmds:
+      - "curl -H 'Host: podtato.example.com' localhost"
+
+  app-podinfo-setup:
+    cmds:
+      - kubectl apply -f app-podinfo.yaml
+    dir: code
+
+  app-podinfo-check:
+    cmds:
+      - "curl -H 'podinfo.example.com' localhost"
+
+  k9s:
+    cmds:
+      - k9s
