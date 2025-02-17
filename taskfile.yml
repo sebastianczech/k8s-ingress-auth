@@ -30,16 +30,13 @@ tasks:
     cmds:
       - kubectl apply -f ingress-nginx.yaml
       - openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=nginxsvc/O=nginxsvc"
-      - kubectl -n ingress-nginx create secret tls tls-secret --key tls.key --cert tls.crt
-    dir: code
-
-  cluster-ingress-status:
-    cmds:
+      - kubectl -n ingress-nginx create secret tls tls-secret --key tls.key --cert tls.crt || true
       - "kubectl wait --namespace ingress-nginx \
         --for=condition=ready pod \
         --selector=app.kubernetes.io/component=controller \
         --timeout=90s"
       - kubectl -n ingress-nginx get services
+    dir: code
 
   dashboard-ingress-setup:
     cmds:
@@ -58,7 +55,7 @@ tasks:
     cmds:
       - "kubectl create secret generic oauth2-proxy-id \
         --from-file=OAUTH2_PROXY_CLIENT_ID=./oauth_id.txt \
-        -n kube-system || true"    
+        -n kube-system || true"
       - "kubectl create secret generic oauth2-proxy-secret \
         --from-file=OAUTH2_PROXY_CLIENT_SECRET=./oauth_secret.txt \
         -n kube-system || true"
@@ -72,6 +69,25 @@ tasks:
       - kubectl -n kube-system get secret oauth2-proxy-id -o jsonpath='{.data.OAUTH2_PROXY_CLIENT_ID}' | base64 --decode
       - kubectl -n kube-system get secret oauth2-proxy-secret -o jsonpath='{.data.OAUTH2_PROXY_CLIENT_SECRET}' | base64 --decode
 
+  basic-auth-setup:
+    cmds:
+      - htpasswd -c basic_auth.htpasswd podtato
+      - kubectl create namespace podtato || true
+      - kubectl -n podtato delete secret basic-auth || true
+      - kubectl -n podtato create secret generic basic-auth --from-file=auth=basic_auth.htpasswd || true
+    dir: code
+
+  cert-auth-setup:
+    cmds:
+      - openssl req -x509 -sha256 -newkey rsa:4096 -keyout ca.key -out ca.crt -days 356 -nodes -subj '/CN=foobar.example.com'
+      - openssl req -new -newkey rsa:4096 -keyout server.key -out server.csr -nodes -subj '/CN=foobar.example.com'
+      - openssl x509 -req -sha256 -days 365 -in server.csr -CA ca.crt -CAkey ca.key -set_serial 01 -out server.crt
+      - openssl req -new -newkey rsa:4096 -keyout client.key -out client.csr -nodes -subj '/CN=foobar.example.com'
+      - openssl x509 -req -sha256 -days 365 -in client.csr -CA ca.crt -CAkey ca.key -set_serial 02 -out client.crt
+      - kubectl create secret generic ca-secret --from-file=ca.crt=ca.crt || true
+      - kubectl create secret generic tls-secret --from-file=tls.crt=server.crt --from-file=tls.key=server.key || true
+    dir: code
+
   app-foo-bar-setup:
     cmds:
       - kubectl apply -f app-foo-bar.yaml
@@ -79,8 +95,11 @@ tasks:
 
   app-foo-bar-check:
     cmds:
-      - "curl -H 'Host: foobar.example.com' localhost/foo"
-      - "curl -H 'Host: foobar.example.com' localhost/bar"
+      - "curl -k --cert client.crt --key client.key https://foobar.example.com/foo"
+      - "curl -k --cert client.crt --key client.key https://foobar.example.com/bar"
+      # - "curl -H 'Host: foobar.example.com' localhost/foo"
+      # - "curl -H 'Host: foobar.example.com' localhost/bar"
+    dir: code
 
   app-podtato-setup:
     cmds:
@@ -89,7 +108,8 @@ tasks:
 
   app-podtato-check:
     cmds:
-      - "curl -H 'Host: podtato.example.com' localhost"
+      - "curl -kv https://podtato.example.com -u 'podtato:***'"
+      # - "curl -H 'Host: podtato.example.com' localhost"
 
   app-podinfo-setup:
     cmds:
@@ -98,7 +118,8 @@ tasks:
 
   app-podinfo-check:
     cmds:
-      - "curl -H 'podinfo.example.com' localhost"
+      - "curl -kiv https://podinfo.example.com"
+      # - "curl -H 'podinfo.example.com' localhost"
 
   k9s:
     cmds:
