@@ -5,6 +5,9 @@
   - [x] podtato -> basic auth
   - [x] foobar -> cert auth
 - [x] prepare detailed README
-- [ ] use Kustomize
+- [x] use Kustomize
+  - https://github.com/kubernetes-sigs/kustomize
+  - https://kubectl.docs.kubernetes.io/
+  - https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/
 - [ ] play with TLS & HTTPS
 - [ ] put all app in dedicated namespaces
