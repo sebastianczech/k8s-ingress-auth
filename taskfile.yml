@@ -118,6 +118,7 @@ tasks:
 
   app-podinfo-check:
     cmds:
+      # https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps
       - "curl -kiv https://podinfo.example.com"
       # - "curl -H 'podinfo.example.com' localhost"
 
