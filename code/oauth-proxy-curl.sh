@@ -4,9 +4,10 @@
 GITHUB_CLIENT_ID=$(cat oauth_id.txt)
 GITHUB_CLIENT_SECRET=$(cat oauth_secret.txt)
 REDIRECT_URI="https://podinfo.example.com/oauth2/callback"
+STATE="1234"
 
 # Step 2: Redirect to GitHub's Authorization Endpoint
-AUTH_URL="https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=repo&response_type=code"
+AUTH_URL="https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=repo&response_type=code&state=${STATE}"
 echo "Open the following URL in your browser to authorize the application:"
 echo "${AUTH_URL}"
 
@@ -20,7 +21,8 @@ TOKEN_RESPONSE=$(curl -s -X POST https://github.com/login/oauth/access_token \
   -d "client_id=${GITHUB_CLIENT_ID}" \
   -d "client_secret=${GITHUB_CLIENT_SECRET}" \
   -d "code=${AUTHORIZATION_CODE}" \
-  -d "redirect_uri=${REDIRECT_URI}")
+  -d "redirect_uri=${REDIRECT_URI}" \
+  -d "state=${STATE}")
 
 ACCESS_TOKEN=$(echo ${TOKEN_RESPONSE} | jq -r '.access_token')
 
@@ -33,8 +35,9 @@ fi
 echo "Access token: ${ACCESS_TOKEN}"
 
 # Step 5: Use the Access Token with `curl` to get user information
-echo "Check https://api.github.com/user"
+echo "Fetching user information from GitHub API"
 curl -H "Authorization: Bearer ${ACCESS_TOKEN}" https://api.github.com/user
 
-echo "Check https://podinfo.example.com"
+# Step 6: Use the Access Token with `curl` to access the protected resource
+echo "Accessing protected resource at https://podinfo.example.com"
 curl -k -L -H "Authorization: Bearer ${ACCESS_TOKEN}" https://podinfo.example.com/
