@@ -10,3 +10,9 @@ server.csr
 client.crt
 client.key
 client.csr
+*.terraform
+*.tfstate
+*.tfstate.*
+*.tfvars
+client_id.txt
+client_secret.txt
