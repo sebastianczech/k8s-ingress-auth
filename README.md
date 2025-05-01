@@ -52,9 +52,16 @@ task app-podinfo-setup
 #### [Microsoft Entra ID](https://oauth2-proxy.github.io/oauth2-proxy/configuration/providers/ms_entra_id)
 
 1. Configure app registration
-2. Check app registration
 ```bash
 az login
+
+terraform init
+terraform apply -auto-approve
+terraform output client_id > client_id.txt
+terraform output client_secret > client_secret.txt
+```
+2. Check app registration
+```bash
 az account subscription list
 az ad app list
 ```
