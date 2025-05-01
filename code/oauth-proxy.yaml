@@ -17,17 +17,19 @@ spec:
     spec:
       containers:
       - args:
-        - --provider=github
+        - --provider=oidc # entra-id # github
+        - --oidc-issuer-url=https://login.microsoftonline.com/dca11c8d-6718-4495-b1a7-46217af67c69/v2.0 # microsoft
+        - --insecure-oidc-skip-issuer-verification=true # microsoft
+        - --scope="openid User.Read"" # microsoft
         - --email-domain=*
         - --upstream=file:///dev/null
         - --http-address=0.0.0.0:4180
+        - --skip-provider-button=true
         - --skip-jwt-bearer-tokens=true
         - --show-debug-on-error=true
         - --set-authorization-header=true
         - --pass-authorization-header=true
         - --redirect-url=https://podinfo.example.com/oauth2/callback
-        # Register a new application
-        # https://github.com/settings/applications/new
         env:
         - name: OAUTH2_PROXY_CLIENT_ID
           valueFrom:
@@ -45,9 +47,20 @@ spec:
         # Recommended: remove email-domain=* in args and set an allowlist
         # - name: OAUTH2_PROXY_GITHUB_USERS
         #   value: alice,bob
+        - name: OAUTH2_PROXY_OIDC_EXTRA_AUDIENCES
+          value: "SP_ID"
+        - name: OAUTH2_PROXY_OIDC_EXTRA_JWT_ISSUERS
+          value: "https://sts.windows.net/dca11c8d-6718-4495-b1a7-46217af67c69/=SP_ID"
         image: quay.io/oauth2-proxy/oauth2-proxy:v7.9.0 # latest
         imagePullPolicy: Always
         name: oauth2-proxy
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
         ports:
         - containerPort: 4180
           protocol: TCP

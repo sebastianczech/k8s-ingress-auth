@@ -53,11 +53,19 @@ tasks:
 
   oauth-proxy-setup:
     cmds:
+      ### GitHub
+      # - "kubectl create secret generic oauth2-proxy-id \
+      #   --from-file=OAUTH2_PROXY_CLIENT_ID=./oauth_id.txt \
+      #   -n kube-system || true"
+      # - "kubectl create secret generic oauth2-proxy-secret \
+      #   --from-file=OAUTH2_PROXY_CLIENT_SECRET=./oauth_secret.txt \
+      #   -n kube-system || true"
+      ### Microsoft Entra
       - "kubectl create secret generic oauth2-proxy-id \
-        --from-file=OAUTH2_PROXY_CLIENT_ID=./oauth_id.txt \
+        --from-file=OAUTH2_PROXY_CLIENT_ID=../infra/client_id.txt \
         -n kube-system || true"
       - "kubectl create secret generic oauth2-proxy-secret \
-        --from-file=OAUTH2_PROXY_CLIENT_SECRET=./oauth_secret.txt \
+        --from-file=OAUTH2_PROXY_CLIENT_SECRET=../infra/client_secret.txt \
         -n kube-system || true"
       - openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=podinfo.example.com/O=podinfo"
       - kubectl -n kube-system create secret tls tls-secret --key tls.key --cert tls.crt || true

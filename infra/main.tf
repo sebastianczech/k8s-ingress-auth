@@ -1,4 +1,4 @@
-
+data "azuread_client_config" "current" {}
 
 resource "azuread_application" "auth" {
   display_name     = "oauth2-proxy"

@@ -16,3 +16,5 @@ client.csr
 *.tfvars
 client_id.txt
 client_secret.txt
+sp_id.txt
+tenant_id.txt

@@ -37,7 +37,7 @@ task dashboard-ingress-setup
 
 #### [GitHub](https://oauth2-proxy.github.io/oauth2-proxy/configuration/providers/github)
 
-1. [Configure GitHub OAuth application](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app):
+1. [Configure GitHub OAuth application](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app) in [https://github.com/settings/applications/new](https://github.com/settings/applications/new):
 ![](images/github_oauth_app.png)
 2. Provision [OAuth proxy](https://kubernetes.github.io/ingress-nginx/examples/auth/oauth-external-auth/):
 ```bash
@@ -57,8 +57,10 @@ az login
 
 terraform init
 terraform apply -auto-approve
-terraform output client_id > client_id.txt
-terraform output client_secret > client_secret.txt
+terraform output -raw client_id > client_id.txt
+terraform output -raw client_secret > client_secret.txt
+terraform output -raw sp_id > sp_id.txt
+terraform output -raw tenant_id > tenant_id.txt
 ```
 2. Check app registration
 ```bash
