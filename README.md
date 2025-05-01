@@ -35,7 +35,9 @@ task dashboard-ingress-setup
 
 ### OAuth proxy
 
-1. Configure GitHub OAuth application:
+#### [GitHub](https://oauth2-proxy.github.io/oauth2-proxy/configuration/providers/github)
+
+1. [Configure GitHub OAuth application](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app):
 ![](images/github_oauth_app.png)
 2. Provision [OAuth proxy](https://kubernetes.github.io/ingress-nginx/examples/auth/oauth-external-auth/):
 ```bash
@@ -46,6 +48,25 @@ task oauth-proxy-setup
 task app-podinfo-setup
 ```
 4. Check app [https://podinfo.example.com/](https://podinfo.example.com/)
+
+#### [Microsoft Entra ID](https://oauth2-proxy.github.io/oauth2-proxy/configuration/providers/ms_entra_id)
+
+1. Configure app registration
+2. Check app registration
+```bash
+az login
+az account subscription list
+az ad app list
+```
+3. Provision [OAuth proxy](https://kubernetes.github.io/ingress-nginx/examples/auth/oauth-external-auth/):
+```bash
+task oauth-proxy-setup
+```
+4. Create `podinfo` app:
+```bash
+task app-podinfo-setup
+```
+5. Check app [https://podinfo.example.com/](https://podinfo.example.com/)
 
 ### Basic authentication
 
