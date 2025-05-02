@@ -17,35 +17,15 @@ spec:
     spec:
       containers:
       - name: netshoot
-        env: # settings from https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview
-        - name: OAUTH2_PROXY_CLIENT_ID
-          valueFrom:
-            secretKeyRef:
-              name: oauth2-proxy-id
-              key: OAUTH2_PROXY_CLIENT_ID
-        - name: OAUTH2_PROXY_CLIENT_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: oauth2-proxy-secret
-              key: OAUTH2_PROXY_CLIENT_SECRET
-        # docker run -ti --rm python:3-alpine python -c 'import secrets,base64; print(base64.b64encode(base64.b64encode(secrets.token_bytes(16))));'
-        - name: OAUTH2_PROXY_COOKIE_SECRET
-          value: "pRz17tleGoFvEN3I+UnRXA=="
-        # Recommended: remove email-domain=* in args and set an allowlist
-        # - name: OAUTH2_PROXY_GITHUB_USERS
-        #   value: alice,bob
-        - name: OAUTH2_PROXY_OIDC_EXTRA_AUDIENCES # microsoft
-          value: "327a6409-da3e-4463-9515-804bd74ccc3f"
-        - name: OAUTH2_PROXY_OIDC_EXTRA_JWT_ISSUERS # microsoft
-          value: "https://sts.windows.net/dca11c8d-6718-4495-b1a7-46217af67c69/=327a6409-da3e-4463-9515-804bd74ccc3f"
         image: nicolaka/netshoot
         command: ["/bin/bash"]
         args: ["-c", "while true; do ping localhost; sleep 60;done"]
       - args:
-        - --provider=oidc # entra-id # github
+        # - --provider=github
+        - --provider=oidc # entra-id
         - --oidc-issuer-url=https://login.microsoftonline.com/dca11c8d-6718-4495-b1a7-46217af67c69/v2.0 # microsoft
-        - --insecure-oidc-skip-issuer-verification=true # microsoft
-        - --scope=openid # "openid User.Read" # microsoft
+        # - --insecure-oidc-skip-issuer-verification=true # microsoft
+        # - --scope=openid # "openid User.Read" # microsoft
         - --email-domain=*
         - --upstream=file:///dev/null
         - --http-address=0.0.0.0:4180
@@ -70,12 +50,12 @@ spec:
         - name: OAUTH2_PROXY_COOKIE_SECRET
           value: "pRz17tleGoFvEN3I+UnRXA=="
         # Recommended: remove email-domain=* in args and set an allowlist
-        # - name: OAUTH2_PROXY_GITHUB_USERS
+        # - name: OAUTH2_PROXY_GITHUB_USERS # github
         #   value: alice,bob
-        - name: OAUTH2_PROXY_OIDC_EXTRA_AUDIENCES # microsoft
-          value: "327a6409-da3e-4463-9515-804bd74ccc3f"
-        - name: OAUTH2_PROXY_OIDC_EXTRA_JWT_ISSUERS # microsoft
-          value: "https://sts.windows.net/dca11c8d-6718-4495-b1a7-46217af67c69/=327a6409-da3e-4463-9515-804bd74ccc3f"
+        # - name: OAUTH2_PROXY_OIDC_EXTRA_AUDIENCES # microsoft
+        #   value: "327a6409-da3e-4463-9515-804bd74ccc3f"
+        # - name: OAUTH2_PROXY_OIDC_EXTRA_JWT_ISSUERS # microsoft
+        #   value: "https://sts.windows.net/dca11c8d-6718-4495-b1a7-46217af67c69/=327a6409-da3e-4463-9515-804bd74ccc3f"
         image: quay.io/oauth2-proxy/oauth2-proxy:v7.9.0 # latest
         imagePullPolicy: Always
         name: oauth2-proxy
