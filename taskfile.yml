@@ -67,6 +67,12 @@ tasks:
       - "kubectl create secret generic oauth2-proxy-secret \
         --from-file=OAUTH2_PROXY_CLIENT_SECRET=../infra/client_secret.txt \
         -n kube-system || true"
+      - "kubectl create secret generic oauth2-proxy-oidc-issuer-url \
+        --from-file=OAUTH2_PROXY_OIDC_ISSUER_URL=../infra/oidc_issuer_url.txt \
+        -n kube-system || true"
+      - "kubectl create secret generic oauth2-proxy-allowed-groups \
+        --from-file=OAUTH2_PROXY_ALLOWED_GROUPS=../infra/group_id.txt \
+        -n kube-system || true"
       - openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=podinfo.example.com/O=podinfo"
       - kubectl -n kube-system create secret tls tls-secret --key tls.key --cert tls.crt || true
       - kubectl apply -f oauth-proxy.yaml
@@ -76,6 +82,8 @@ tasks:
     cmds:
       - kubectl -n kube-system delete secret oauth2-proxy-id || true
       - kubectl -n kube-system delete secret oauth2-proxy-secret || true
+      - kubectl -n kube-system delete secret oauth2-proxy-oidc-issuer-url || true
+      - kubectl -n kube-system delete secret oauth2-proxy-allowed-groups || true
       - kubectl -n kube-system delete secret tls-secret || true
       - kubectl delete -f oauth-proxy.yaml || true
     dir: code
@@ -92,6 +100,8 @@ tasks:
     cmds:
       - kubectl -n kube-system get secret oauth2-proxy-id -o jsonpath='{.data.OAUTH2_PROXY_CLIENT_ID}' | base64 --decode
       - kubectl -n kube-system get secret oauth2-proxy-secret -o jsonpath='{.data.OAUTH2_PROXY_CLIENT_SECRET}' | base64 --decode
+      - kubectl -n kube-system get secret oauth2-proxy-oidc-issuer-url -o jsonpath='{.data.OAUTH2_PROXY_OIDC_ISSUER_URL}' | base64 --decode
+      - kubectl -n kube-system get secret oauth2-proxy-allowed-groups -o jsonpath='{.data.OAUTH2_PROXY_ALLOWED_GROUPS}' | base64 --decode
 
   basic-auth-setup:
     cmds:

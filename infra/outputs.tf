@@ -18,3 +18,13 @@ output "tenant_id" {
   description = "Tenant ID of the Azure AD application"
   value       = data.azuread_client_config.current.tenant_id
 }
+
+output "group_id" {
+  description = "Group ID of the oauth2_proxy_users group"
+  value       = azuread_group.oauth2_proxy_users.object_id
+}
+
+output "oidc_issuer_url" {
+  description = "OIDC issuer URL"
+  value       = "https://login.microsoftonline.com/${data.azuread_client_config.current.tenant_id}/v2.0"
+}

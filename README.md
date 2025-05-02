@@ -61,6 +61,8 @@ terraform output -raw client_id > client_id.txt
 terraform output -raw client_secret > client_secret.txt
 terraform output -raw sp_id > sp_id.txt
 terraform output -raw tenant_id > tenant_id.txt
+terraform output -raw group_id > group_id.txt
+terraform output -raw oidc_issuer_url > oidc_issuer_url.txt
 ```
 2. Check app registration
 ```bash
