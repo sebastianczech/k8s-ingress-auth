@@ -76,6 +76,7 @@ resource "azuread_service_principal" "sp" {
   app_role_assignment_required = false
 }
 
+# https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/service_principal_password
 resource "azuread_service_principal_password" "pass" {
   service_principal_id = azuread_service_principal.sp.id
 }
