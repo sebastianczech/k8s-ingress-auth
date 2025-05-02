@@ -84,7 +84,7 @@ tasks:
     cmds:
       - kubectl -n kube-system logs deployments/oauth2-proxy --container oauth2-proxy -f
 
-  ouath-proxy-shell:
+  oauth-proxy-shell:
     cmds:
       - kubectl -n kube-system exec -it deploy/oauth2-proxy --container netshoot -- /bin/bash
 
