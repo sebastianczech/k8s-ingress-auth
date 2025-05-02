@@ -72,6 +72,22 @@ tasks:
       - kubectl apply -f oauth-proxy.yaml
     dir: code
 
+  oauth-proxy-clean:
+    cmds:
+      - kubectl -n kube-system delete secret oauth2-proxy-id || true
+      - kubectl -n kube-system delete secret oauth2-proxy-secret || true
+      - kubectl -n kube-system delete secret tls-secret || true
+      - kubectl delete -f oauth-proxy.yaml || true
+    dir: code
+
+  oauth-proxy-logs:
+    cmds:
+      - kubectl -n kube-system logs deployments/oauth2-proxy --container oauth2-proxy -f
+
+  ouath-proxy-shell:
+    cmds:
+      - kubectl -n kube-system exec -it deploy/oauth2-proxy --container netshoot -- /bin/bash
+
   oauth-proxy-check:
     cmds:
       - kubectl -n kube-system get secret oauth2-proxy-id -o jsonpath='{.data.OAUTH2_PROXY_CLIENT_ID}' | base64 --decode
