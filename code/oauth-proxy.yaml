@@ -21,8 +21,8 @@ spec:
         command: ["/bin/bash"]
         args: ["-c", "while true; do ping localhost; sleep 60;done"]
       - args:
-        # - --provider=github
-        - --provider=oidc # entra-id
+        # - --provider=github # github
+        - --provider=oidc # entra-id # microsoft
         - --scope=openid # microsoft
         - --email-domain=*
         - --upstream=file:///dev/null
@@ -47,15 +47,14 @@ spec:
         # docker run -ti --rm python:3-alpine python -c 'import secrets,base64; print(base64.b64encode(base64.b64encode(secrets.token_bytes(16))));'
         - name: OAUTH2_PROXY_COOKIE_SECRET
           value: "pRz17tleGoFvEN3I+UnRXA=="
-        # Recommended: remove email-domain=* in args and set an allowlist
         # - name: OAUTH2_PROXY_GITHUB_USERS # github
-        #   value: alice,bob
-        - name: OAUTH2_PROXY_OIDC_ISSUER_URL
+        #   value: sebastianczech
+        - name: OAUTH2_PROXY_OIDC_ISSUER_URL # microsoft
           valueFrom:
             secretKeyRef:
               name: oauth2-proxy-oidc-issuer-url
               key: OAUTH2_PROXY_OIDC_ISSUER_URL
-        - name: OAUTH2_PROXY_ALLOWED_GROUPS
+        - name: OAUTH2_PROXY_ALLOWED_GROUPS # microsoft
           valueFrom:
             secretKeyRef:
               name: oauth2-proxy-allowed-groups
