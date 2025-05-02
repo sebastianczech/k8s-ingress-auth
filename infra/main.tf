@@ -12,7 +12,12 @@ resource "azuread_application" "auth" {
   display_name     = "oauth2-proxy"
   sign_in_audience = "AzureADMyOrg"
 
+  group_membership_claims = [
+    "SecurityGroup"
+  ]
+
   web {
+    homepage_url = "https://podinfo.example.com"
     redirect_uris = [
       "https://podinfo.example.com/oauth2/callback",
     ]
