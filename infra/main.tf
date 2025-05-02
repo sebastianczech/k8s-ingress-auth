@@ -17,6 +17,7 @@ resource "azuread_application" "auth" {
       "https://podinfo.example.com/oauth2/callback",
     ]
   }
+  # We don't specify any required API permissions - we allow user consent only
 
   api {
     mapped_claims_enabled          = true
@@ -56,7 +57,6 @@ resource "azuread_application" "auth" {
       type = "Scope"
     }
   }
-  # We don't specify any required API permissions - we allow user consent only
 }
 
 resource "azuread_service_principal_delegated_permission_grant" "permission" {
