@@ -1,7 +1,10 @@
+# https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/data-sources/client_config
 data "azuread_client_config" "current" {}
 
+# https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/data-sources/application_published_app_ids
 data "azuread_application_published_app_ids" "well_known" {}
 
+# https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/service_principal
 resource "azuread_service_principal" "msgraph" {
   client_id    = data.azuread_application_published_app_ids.well_known.result.MicrosoftGraph
   use_existing = true
@@ -64,6 +67,7 @@ resource "azuread_application" "auth" {
   }
 }
 
+# https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/service_principal_delegated_permission_grant
 resource "azuread_service_principal_delegated_permission_grant" "permission" {
   service_principal_object_id          = azuread_service_principal.sp.object_id
   resource_service_principal_object_id = azuread_service_principal.msgraph.object_id
