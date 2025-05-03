@@ -20,6 +20,13 @@ spec:
         image: nicolaka/netshoot
         command: ["/bin/bash"]
         args: ["-c", "while true; do ping localhost; sleep 60;done"]
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "100m"
+          limits:
+            memory: "64Mi"
+            cpu: "200m"
       - args:
         # - --provider=github # github
         - --provider=oidc # entra-id # microsoft
