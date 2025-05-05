@@ -28,3 +28,18 @@ output "oidc_issuer_url" {
   description = "OIDC issuer URL"
   value       = "https://login.microsoftonline.com/${data.azuread_client_config.current.tenant_id}/v2.0"
 }
+
+output "application_name" {
+  description = "Display name of the Azure AD application"
+  value       = azuread_application.auth.display_name
+}
+
+output "application_homepage" {
+  description = "Homepage URL of the Azure AD application"
+  value       = azuread_application.auth.web[0].homepage_url
+}
+
+output "group_name" {
+  description = "Display name of the oauth2_proxy_users group"
+  value       = azuread_group.oauth2_proxy_users.display_name
+}
