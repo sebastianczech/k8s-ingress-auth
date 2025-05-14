@@ -127,6 +127,55 @@ tasks:
       - kubectl apply -f app-foo-bar.yaml
     dir: code
 
+  cert-root-ca-get:
+    desc: Get root CA certificate for a domain
+    cmds:
+      - openssl s_client -connect {{.DOMAIN}}:443 -showcerts </dev/null 2>/dev/null |
+        awk '/BEGIN CERTIFICATE/,/END CERTIFICATE/ {print}' > external_cert_chain.pem
+      - openssl x509 -in external_cert_chain.pem -text -noout
+      - |
+        echo "Analyzing certificate..."
+        openssl x509 -in external_cert_chain.pem  -text -noout | awk '
+          /Subject:/ { subject=$0 }
+          /Issuer:/ { issuer=$0 }
+          /CA:/ { ca=$0 }
+          END {
+            print "\nChecking if certificate is a root CA:";
+            print "1. Subject  :", subject;
+            print "2. Issuer   :", issuer;
+            print "3. Basic Constraints:", ca;
+            if (ca ~ /CA:TRUE/) {
+              print "\n✅ This is a root CA certificate";
+            } else {
+              print "\n❌ This is NOT a root CA certificate";
+            }
+          }'
+      - openssl s_client -connect {{.DOMAIN}}:443 -showcerts </dev/null 2>/dev/null |
+        awk '/BEGIN CERTIFICATE/,/END CERTIFICATE/ {cert = cert "\n" $0}
+        /END CERTIFICATE/ {certs[++i] = cert; cert = ""}
+        END {print certs[i]}' > external_cert_root_ca.pem
+      - openssl x509 -in external_cert_root_ca.pem -text -noout
+      - |
+        echo "Analyzing certificate..."
+        openssl x509 -in external_cert_root_ca.pem  -text -noout | awk '
+          /Subject:/ { subject=$0 }
+          /Issuer:/ { issuer=$0 }
+          /CA:/ { ca=$0 }
+          END {
+            print "\nChecking if certificate is a root CA:";
+            print "1. Subject  :", subject;
+            print "2. Issuer   :", issuer;
+            print "3. Basic Constraints:", ca;
+            if (ca ~ /CA:TRUE/) {
+              print "\n✅ This is a root CA certificate";
+            } else {
+              print "\n❌ This is NOT a root CA certificate";
+            }
+          }'
+    vars:
+      DOMAIN: github.com # foobar.example.com
+    dir: code
+
   app-foo-bar-check:
     cmds:
       - "curl -k --cert client.crt --key client.key https://foobar.example.com/foo"
