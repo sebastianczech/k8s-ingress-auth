@@ -100,6 +100,10 @@ task app-foo-bar-setup
 task app-foo-bar-check
 ```
 
+More information:
+- [SSL/TLS in Learning CI/CD](https://github.com/sebastianczech/Learning-CI-CD#ssltls)
+- [Add SSL / TLS Certificate or .PEM file to Kubernetes’ Pod’s trusted root ca store](https://paraspatidar.medium.com/add-ssl-tls-certificate-or-pem-file-to-kubernetes-pod-s-trusted-root-ca-store-7bed5cd683d)
+
 ## Gateway API
 
 ### Links
