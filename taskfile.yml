@@ -172,6 +172,7 @@ tasks:
               print "\n❌ This is NOT a root CA certificate";
             }
           }'
+      - openssl s_client -connect {{.DOMAIN}}:443 -CAfile external_cert_root_ca.pem
     vars:
       DOMAIN: github.com # foobar.example.com
     dir: code

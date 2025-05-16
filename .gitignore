@@ -22,3 +22,4 @@ group_id.txt
 oidc_issuer_url.txt
 external_cert_root_ca.pem
 external_cert_chain.pem
+.venv
